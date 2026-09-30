@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil Saya — RevoShop Checkpoint 1</title>
+    <!-- Stylesheet terpisah (Tugas 3.1) -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- HEADER: identitas & navigasi utama halaman -->
+    <header class="site-header">
+      <h1>Nama Kamu</h1>
+      <p class="tagline">Aspiring Frontend Developer</p>
+      <nav aria-label="Navigasi utama">
+        <ul>
+          <li><a href="#about">Tentang</a></li>
+          <li><a href="#skills">Keahlian</a></li>
+          <li><a href="#contact">Kontak</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- MAIN: konten utama halaman, dibagi menjadi beberapa section bermakna -->
+    <main>
+      <!-- SECTION 1: Tentang / bio singkat -->
+      <section id="about" aria-labelledby="about-title">
+        <h2 id="about-title">Tentang Saya</h2>
+        <p>
+          Halo! Saya sedang belajar membangun antarmuka web modern dengan HTML,
+          CSS, JavaScript, TypeScript, dan Tailwind CSS sebagai bagian dari
+          Module 3 RevoShop.
+        </p>
+      </section>
+
+      <!-- SECTION 2: Keahlian (akan ditata dengan CSS Grid pada Tugas 3.2) -->
+      <section id="skills" aria-labelledby="skills-title">
+        <h2 id="skills-title">Keahlian</h2>
+        <ul id="skills-list">
+          <!-- Daftar skill akan dirender via JavaScript pada Tugas 4 -->
+        </ul>
+      </section>
+
+      <!-- SECTION 3: Kontak (form detail dilengkapi pada Tugas 2.2) -->
+      <section id="contact" aria-labelledby="contact-title">
+        <h2 id="contact-title">Hubungi Saya</h2>
+        <form id="contact-form">
+          <!-- Field 1: Nama -->
+          <div class="form-field">
+            <label for="name">Nama</label>
+            <input type="text" id="name" name="name" placeholder="Nama lengkap" required />
+          </div>
+
+          <!-- Field 2: Email -->
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="nama@contoh.com" required />
+          </div>
+
+          <!-- Field 3: Telepon -->
+          <div class="form-field">
+            <label for="phone">Telepon</label>
+            <input type="tel" id="phone" name="phone" placeholder="08xxxxxxxxxx" />
+          </div>
+
+          <!-- Field 4: Pesan -->
+          <div class="form-field">
+            <label for="message">Pesan</label>
+            <textarea id="message" name="message" rows="4" placeholder="Tulis pesanmu di sini..." required></textarea>
+          </div>
+
+          <!-- Tombol submit -->
+          <button type="submit">Kirim Pesan</button>
+
+          <!-- Area feedback: pesan sukses/gagal akan dibuat via JavaScript pada Tugas 4 -->
+          <p id="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <!-- FOOTER: informasi penutup / hak cipta -->
+    <footer class="site-footer">
+      <p>&copy; 2026 ves — RevoShop Frontend Foundations.</p>
+    </footer>
+
+    <!-- Script akan ditautkan pada Tugas 4 -->
+    <!-- <script src="script.js"></script> -->
+  </body>
+</html>

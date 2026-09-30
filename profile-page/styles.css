@@ -1,0 +1,117 @@
+/* ============================================================
+   styles.css — Profile Page (RevoShop Checkpoint 1)
+   Tugas 3.1: CSS selector + box model
+   ============================================================ */
+
+/* --- Palet warna (CSS custom properties / variabel) — tema "Gengar" ---
+   Didefinisikan di :root agar bisa dipakai di seluruh file.
+   Cara pakai: color: var(--nama-variabel); */
+:root {
+  --violet: #9473b4;   /* violet   — aksen & hover */
+  --magenta: #b48bbd;  /* magenta  — elemen sekunder / border */
+  --indigo: #5a4a9c;   /* indigo   — header & footer (warna terkuat) */
+  --pale-red: #ff9494; /* pale red — aksen lembut */
+  --light-red: #ff5a5a;/* light red — aksen kuat / tombol */
+
+  --text-dark: #2b2b2b; /* teks utama */
+  --bg-page: #fff6ff;   /* latar halaman (near-white keunguan) */
+  --white: #ffffff;
+}
+
+/* --- Reset ringan & pengaturan dasar ---
+   box-sizing: border-box membuat lebar/tinggi elemen SUDAH termasuk
+   padding dan border, sehingga box model lebih mudah diprediksi. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Element selector: menata elemen berdasarkan nama tag ---
+   'body' adalah element selector. Style di sini berlaku untuk seluruh halaman. */
+body {
+  font-family: Arial, Helvetica, sans-serif; /* jenis huruf */
+  line-height: 1.6;                          /* jarak antar baris teks */
+  color: var(--text-dark);                   /* warna teks dari palet */
+  background-color: var(--bg-page);          /* warna latar dari palet */
+}
+
+/* --- Header: menggunakan class selector (.site-header) ---
+   Diawali titik (.) berarti memilih elemen dengan class="site-header". */
+.site-header {
+  background-color: var(--indigo); /* indigo dari palet */
+  color: var(--white);             /* teks putih */
+  padding: 24px;                   /* ruang DALAM header (bagian dari box model) */
+  text-align: center;                  /* teks rata tengah */
+}
+
+/* Tagline di bawah nama, sedikit transparan agar tampak sekunder */
+.tagline {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+/* --- Navigasi di dalam header ---
+   Selector turunan: '.site-header nav ul' memilih <ul> yang berada
+   di dalam <nav> di dalam .site-header. */
+.site-header nav ul {
+  list-style: none;          /* hilangkan bullet titik */
+  display: flex;             /* susun item menyamping */
+  justify-content: center;   /* rata tengah */
+  gap: 20px;                 /* jarak antar item */
+  margin-top: 12px;
+}
+
+.site-header nav a {
+  color: var(--white);
+  text-decoration: none;     /* hilangkan garis bawah link */
+  font-weight: bold;
+}
+
+/* Saat kursor mengarah ke link, warna berubah jadi pale-red (kontras) */
+.site-header nav a:hover {
+  color: var(--pale-red);
+}
+
+/* --- Main: memberi ruang di sekeliling konten utama ---
+   'main' adalah element selector. max-width membatasi lebar agar
+   teks tidak terlalu panjang di layar besar; margin auto membuatnya
+   berada di tengah secara horizontal. */
+main {
+  max-width: 800px;   /* lebar maksimum konten */
+  margin: 24px auto;  /* atas-bawah 24px, kiri-kanan otomatis (center) */
+  padding: 0 16px;    /* ruang kiri-kanan agar tidak mepet tepi layar */
+}
+
+/* --- Section: setiap section tampil sebagai kartu putih ---
+   'section' element selector memberi gaya dasar untuk semua section. */
+section {
+  background-color: var(--white);
+  padding: 20px;         /* ruang dalam */
+  margin-bottom: 20px;   /* jarak antar section */
+  border-radius: 8px;    /* sudut membulat */
+}
+
+/* Judul tiap section (h2) diberi warna violet dari palet */
+section h2 {
+  color: var(--violet);
+  margin-bottom: 12px;
+}
+
+/* --- ID selector + BOX MODEL LENGKAP ---
+   Diawali pagar (#) berarti memilih elemen dengan id tertentu.
+   '#contact' memilih <section id="contact">.
+
+   Box model punya 4 lapisan dari dalam ke luar:
+     1) content : isi elemen (teks/form) — lebarnya diatur width
+     2) padding : ruang antara isi dan border
+     3) border  : garis tepi
+     4) margin  : ruang di LUAR border (jarak ke elemen lain)
+   Keempatnya kita nyatakan eksplisit di sini. */
+#contact {
+  width: 100%;                      /* CONTENT: lebar area isi */
+  padding: 24px;                    /* PADDING: ruang dalam */
+  border: 2px solid var(--magenta); /* BORDER: garis magenta */
+  margin-top: 24px;                 /* MARGIN: jarak ke elemen di atasnya */
+}
