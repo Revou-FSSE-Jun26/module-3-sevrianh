@@ -115,3 +115,56 @@ section h2 {
   border: 2px solid var(--magenta); /* BORDER: garis magenta */
   margin-top: 24px;                 /* MARGIN: jarak ke elemen di atasnya */
 }
+
+/* --- Tugas 3.2: LAYOUT CSS GRID DUA DIMENSI ---
+   #skills-list ditata sebagai grid. Grid itu sistem tata letak
+   berbasis BARIS (rows) dan KOLOM (columns) — dua dimensi. */
+#skills-list {
+  list-style: none;                          /* hilangkan bullet */
+  display: grid;                             /* aktifkan Grid */
+  grid-template-columns: repeat(3, 1fr);     /* 3 kolom sama lebar */
+  grid-template-rows: repeat(2, auto);       /* 2 baris, tinggi menyesuaikan isi */
+  gap: 16px;                                 /* jarak antar sel (baris & kolom) */
+  margin-top: 8px;
+}
+
+/* Setiap kartu skill di dalam grid */
+.skill-card {
+  background-color: var(--magenta); /* magenta dari palet */
+  color: var(--white);
+  text-align: center;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* ============================================================
+   Tugas 3.3: RESPONSIF DENGAN MEDIA QUERIES
+   Media query menerapkan aturan CSS HANYA jika kondisi layar
+   terpenuhi. Di sini kita pakai pendekatan "layar mengecil":
+   semakin sempit layar, semakin sedikit kolom grid.
+   ============================================================ */
+
+/* Tablet & layar menengah: maksimum lebar 768px -> grid jadi 2 kolom */
+@media (max-width: 768px) {
+  #skills-list {
+    grid-template-columns: repeat(2, 1fr); /* 3 kolom -> 2 kolom */
+  }
+}
+
+/* Mobile: maksimum lebar 480px -> grid jadi 1 kolom (menumpuk vertikal),
+   dan navigasi header ikut menumpuk agar tidak terlalu sempit. */
+@media (max-width: 480px) {
+  #skills-list {
+    grid-template-columns: 1fr; /* 1 kolom penuh */
+  }
+
+  .site-header nav ul {
+    flex-direction: column; /* item navigasi menumpuk ke bawah */
+    gap: 8px;
+  }
+
+  main {
+    padding: 0 12px; /* sedikit rapatkan agar konten muat di layar sempit */
+  }
+}
