@@ -36,16 +36,13 @@
       <!-- SECTION 2: Keahlian (akan ditata dengan CSS Grid pada Tugas 3.2) -->
       <section id="skills" aria-labelledby="skills-title">
         <h2 id="skills-title">Keahlian</h2>
-        <!-- Item statis sementara untuk latihan CSS Grid (Tugas 3.2).
-             Nanti akan dirender via JavaScript pada Tugas 4. -->
-        <ul id="skills-list">
-          <li class="skill-card">HTML</li>
-          <li class="skill-card">CSS</li>
-          <li class="skill-card">JavaScript</li>
-          <li class="skill-card">TypeScript</li>
-          <li class="skill-card">Tailwind CSS</li>
-          <li class="skill-card">Git</li>
-        </ul>
+        <!-- Tombol untuk menampilkan/menyembunyikan daftar skill (toggle). -->
+        <button id="toggle-skills" type="button">Sembunyikan Keahlian</button>
+        <!-- Daftar ini akan diisi oleh JavaScript (Tugas 4.2). -->
+        <ul id="skills-list"></ul>
+
+        <!-- Ringkasan statistik skill, diisi via array methods (Tugas 4.4). -->
+        <p id="skills-summary"></p>
       </section>
 
       <!-- SECTION 3: Kontak (form detail dilengkapi pada Tugas 2.2) -->
@@ -90,7 +87,7 @@
       <p>&copy; 2026 ves — RevoShop Frontend Foundations.</p>
     </footer>
 
-    <!-- Script akan ditautkan pada Tugas 4 -->
-    <!-- <script src="script.js"></script> -->
+    <!-- Script interaktivitas (Tugas 4) -->
+    <script src="script.js"></script>
   </body>
 </html>
