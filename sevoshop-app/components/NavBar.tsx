@@ -38,7 +38,7 @@ export default function NavBar() {
                 className={
                   isActive
                     ? "font-semibold text-white underline underline-offset-4"
-                    : "text-indigo-100 hover:text-white"
+                    : "text-gengar-palered hover:text-white"
                 }
               >
                 {link.label}

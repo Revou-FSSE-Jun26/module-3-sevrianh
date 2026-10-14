@@ -9,6 +9,6 @@
 export function getButtonClasses(inStock: boolean): string {
   const base = "px-4 py-2 rounded-md font-medium transition-colors";
   return inStock
-    ? `${base} bg-indigo-600 text-white hover:bg-indigo-700`
+    ? `${base} bg-gengar-indigo text-white hover:bg-gengar-violet`
     : `${base} bg-gray-300 text-gray-500 cursor-not-allowed`;
 }
