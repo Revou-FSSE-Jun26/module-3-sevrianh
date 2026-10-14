@@ -15,6 +15,7 @@ import type { Product } from "@/lib/types";
 import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
 import ProductGrid from "./ProductGrid";
+import AddProductForm from "./AddProductForm";
 
 interface ProductListProps {
   initialProducts: Product[]; // produk awal dari Server Component (Req 13.1)
@@ -35,6 +36,12 @@ export default function ProductList({ initialProducts }: ProductListProps) {
       .then(setProducts)
       .catch(() => setProducts([]));
   }, [search]);
+
+  // Tambah produk baru ke daftar secara IMMUTABLE (Req 5.4): buat
+  // array baru dengan spread, taruh produk baru di depan.
+  function handleAdd(newProduct: Product) {
+    setProducts((prev) => [newProduct, ...prev]);
+  }
 
   // Filter berdasarkan kategori di sisi klien (Fake Store tidak punya
   // filter kategori server-side; saat kembali ke SevoShop bisa via API).
@@ -58,6 +65,8 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         </div>
         <CategoryFilter onSelect={setCategoryId} />
       </div>
+
+      <AddProductForm onAdd={handleAdd} />
 
       {search && (
         <p className="text-sm text-gray-500">
