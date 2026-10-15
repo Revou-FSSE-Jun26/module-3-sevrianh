@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SevoShop — Frontend (Next.js)
 
-## Getting Started
+Frontend toko online SevoShop, dibangun dengan **Next.js (App Router)**, **TypeScript**,
+dan **Tailwind CSS**. Dikembangkan sebagai Checkpoint 2 (fondasi React/Next.js) dan dirancang
+untuk berlanjut ke Checkpoint 3 (autentikasi, keranjang, dashboard, testing, deployment).
 
-First, run the development server:
+## Fitur (Checkpoint 2)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Home menampilkan produk unggulan (Server Component).
+- Halaman produk dengan pencarian live dan filter kategori.
+- Halaman detail produk dengan judul halaman dinamis (`generateMetadata`).
+- Halaman kategori dan pesanan (Server Components).
+- Navigasi dengan penanda route aktif (`usePathname`).
+- Form tambah produk (controlled form + validasi).
+- Error handling tiga lapis (`res.ok`, `error.tsx`, `loading.tsx`) di setiap route data.
+
+## Teknologi
+
+Next.js (App Router), React, TypeScript, Tailwind CSS, `next/navigation`,
+`NEXT_PUBLIC_API_BASE_URL` untuk konfigurasi API berbasis environment.
+
+## Struktur Proyek
+
+```
+sevoshop-app/
+├── app/                  # Route App Router (page/layout/loading/error)
+│   ├── layout.tsx        # Root layout: Header + Footer + metadata
+│   ├── page.tsx          # Home (Server Component)
+│   ├── products/         # List, detail [id], loading, error, nested layout
+│   ├── categories/       # List kategori + loading + error
+│   └── orders/           # List pesanan + loading + error
+├── components/           # Komponen UI (Header, Footer, NavBar, Card, ProductCard, ...)
+├── lib/                  # Utilitas terpusat
+│   ├── types.ts          # Tipe domain (Product, Category, Order)
+│   ├── api.ts            # Helper fetch (res.ok, baca NEXT_PUBLIC_API_BASE_URL)
+│   └── ui.ts             # Helper styling (getButtonClasses)
+├── context/              # (Checkpoint 3) AuthContext, CartContext
+├── hooks/                # (Checkpoint 3) useAuth, useCart, useLocalStorage
+├── .env.local            # NEXT_PUBLIC_API_BASE_URL (tidak di-commit)
+└── .env.example          # Template environment
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Konfigurasi Environment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Salin `.env.example` ke `.env.local`, lalu set URL API:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_API_BASE_URL=https://sevoshop.onrender.com
+```
 
-## Learn More
+Catatan: ini URL **Flask API** (Render), bukan URL database Supabase.
+Selama backend diperbaiki, pengembangan sementara memakai Fake Store API
+(`https://fakestoreapi.com`) dengan adapter di `lib/api.ts`.
 
-To learn more about Next.js, take a look at the following resources:
+## Menjalankan Secara Lokal
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev        # http://localhost:3000
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Perintah lain:
 
-## Deploy on Vercel
+```bash
+npm run build      # build produksi (tsc + next build)
+npx tsc --noEmit   # cek tipe tanpa output
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Keberlanjutan ke Checkpoint 3
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Struktur `app/`, `components/`, `lib/` sudah terpisah rapi. Folder `context/` dan `hooks/`
+disiapkan untuk auth dan cart. Tipe domain terpusat di `lib/types.ts` dan utilitas API di
+`lib/api.ts` dapat dipakai ulang tanpa pembongkaran.
