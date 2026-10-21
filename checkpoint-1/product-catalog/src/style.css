@@ -1,3 +1,18 @@
 /* Mengimpor seluruh Tailwind CSS (base, components, utilities).
    Cukup satu baris ini — plugin @tailwindcss/vite yang memproses sisanya. */
 @import "tailwindcss";
+
+/* Palet warna "Gengar" — konsisten dengan Profile Page & sevoshop-app.
+   Didaftarkan sebagai warna Tailwind via @theme. */
+@theme {
+  --color-gengar-violet: #9473b4;
+  --color-gengar-magenta: #b48bbd;
+  --color-gengar-indigo: #5a4a9c;
+  --color-gengar-palered: #ff9494;
+  --color-gengar-lightred: #ff5a5a;
+  --color-gengar-bg: #fff6ff;
+}
+
+body {
+  background-color: var(--color-gengar-bg);
+}
