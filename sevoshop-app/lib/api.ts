@@ -11,6 +11,8 @@ import type {
   Category,
   Order,
   FakeStoreProduct,
+  User,
+  RegisterFormData,
 } from "./types";
 
 // Baca URL dasar API dari environment (bukan hardcode).
@@ -84,3 +86,64 @@ export async function getCategories(): Promise<Category[]> {
 export async function getOrders(): Promise<Order[]> {
   return [];
 }
+
+
+/* ============================================================
+   Checkpoint 3: helper operasi TULIS (POST/PUT/DELETE)
+   Memeriksa res.ok; pada gagal, mem-parse body { error } Flask
+   dan melempar Error dengan pesan tersebut (untuk form/toast).
+   ============================================================ */
+
+// Ambil pesan error dari body respons (Flask mengembalikan { error }).
+async function extractError(res: Response): Promise<string> {
+  try {
+    const body = await res.json();
+    if (body && typeof body.error === "string") return body.error;
+  } catch {
+    // body bukan JSON atau kosong — abaikan.
+  }
+  return `Permintaan gagal (${res.status})`;
+}
+
+export async function postJson<T>(path: string, data: unknown): Promise<T> {
+  if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(await extractError(res));
+  return res.json() as Promise<T>;
+}
+
+export async function putJson<T>(path: string, data: unknown): Promise<T> {
+  if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(await extractError(res));
+  return res.json() as Promise<T>;
+}
+
+export async function del(path: string): Promise<void> {
+  if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
+  const res = await fetch(`${BASE_URL}${path}`, { method: "DELETE" });
+  if (!res.ok) throw new Error(await extractError(res));
+}
+
+/* ------------------------------------------------------------
+   Fungsi API spesifik Checkpoint 3 (dipakai form & dashboard).
+   Catatan: ini menyasar endpoint backend SevoShop; berfungsi
+   penuh saat backend nyata tersedia (atau di-mock saat testing).
+   ------------------------------------------------------------ */
+
+export const registerUser = (data: RegisterFormData) =>
+  postJson<User>(`/users`, data);
+
+export const loginUser = (credentials: { email: string; password: string }) =>
+  postJson<User>(`/auth/login`, credentials);
+
+export const createOrder = (items: { product_id: number; quantity: number }[]) =>
+  postJson<Order>(`/orders`, { items });

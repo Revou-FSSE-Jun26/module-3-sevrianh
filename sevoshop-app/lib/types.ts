@@ -39,6 +39,35 @@ export interface Order {
 }
 
 /* ------------------------------------------------------------
+   Tipe untuk Checkpoint 3: autentikasi & keranjang.
+   ------------------------------------------------------------ */
+
+// Peran pengguna (union type) menentukan hak akses.
+export type UserRole = "admin" | "customer";
+
+// Pengguna yang login (disimpan di AuthContext & localStorage).
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role?: UserRole; // opsional; backend menentukan saat login
+}
+
+// Data form registrasi (semua string karena berasal dari <input>).
+export interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// Satu item di dalam keranjang: produk + kuantitas.
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
+/* ------------------------------------------------------------
    Tipe MENTAH dari Fake Store API (sementara). Dipakai hanya
    oleh adapter di lib/api.ts untuk diubah ke bentuk domain.
    ------------------------------------------------------------ */

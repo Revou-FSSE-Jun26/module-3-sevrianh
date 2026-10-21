@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AuthProvider } from "@/context/AuthContext";
 
 // Catatan: Google Fonts (next/font/google) dilepas agar aplikasi tidak
 // bergantung pada koneksi ke fonts.gstatic.com saat dev/build. Kita pakai
@@ -18,11 +20,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="id" className="h-full antialiased">
       <body className="min-h-full flex flex-col font-sans">
-        <Header />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-          {children}
-        </main>
-        <Footer />
+        {/* AuthProvider menyediakan sesi ke seluruh aplikasi (Req 2.4). */}
+        <AuthProvider>
+          <Header />
+          <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+            {children}
+          </main>
+          <Footer />
+          {/* Toaster: tempat notifikasi react-hot-toast muncul (Req 12.1). */}
+          <Toaster position="top-right" />
+        </AuthProvider>
       </body>
     </html>
   );
