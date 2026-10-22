@@ -1,8 +1,7 @@
 /* ============================================================
    lib/types.ts — Tipe terpusat untuk aplikasi SevoShop
    Tipe domain (Product, Category, Order) MENGIKUTI bentuk
-   backend SevoShop, agar komponen tidak perlu diubah saat
-   nanti berpindah dari Fake Store API kembali ke Render.
+   backend SevoShop (Flask API di Render).
    ============================================================ */
 
 // Union type untuk status stok (dipakai conditional styling).
@@ -21,21 +20,27 @@ export interface Product {
   price: number;
   stock: number;
   category: Category; // objek bersarang
-  image?: string;     // opsional: URL gambar (tersedia dari Fake Store)
 }
 
-// Item di dalam sebuah order.
+// Item di dalam sebuah order (bentuk backend: order_items[].to_dict()).
 export interface OrderItem {
+  id?: number;
+  order_id?: number;
   product_id: number;
   quantity: number;
+  price_at_purchase?: number;
+  subtotal?: number;
 }
 
-// Order (bentuk domain SevoShop).
+// Order (bentuk backend SevoShop: Order.to_dict()).
 export interface Order {
   id: number;
   user_id: number;
-  order_items: OrderItem[];
-  total_price: number;
+  total_amount: number;
+  status: string;
+  ordered_at?: string;
+  is_deleted?: boolean;
+  items?: OrderItem[]; // hadir saat include_items=True
 }
 
 /* ------------------------------------------------------------
@@ -68,15 +73,25 @@ export interface CartItem {
 }
 
 /* ------------------------------------------------------------
-   Tipe MENTAH dari Fake Store API (sementara). Dipakai hanya
-   oleh adapter di lib/api.ts untuk diubah ke bentuk domain.
+   Tipe MENTAH dari backend SevoShop (Flask). Dipakai oleh
+   adapter di lib/api.ts untuk diubah ke bentuk domain.
    ------------------------------------------------------------ */
-export interface FakeStoreProduct {
+
+// Bentuk Category.to_dict() dari backend.
+export interface BackendCategory {
   id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string; // Fake Store: kategori berupa string
-  image: string;
-  rating: { rate: number; count: number };
+  category_name: string;
+  description?: string | null;
+  created_at?: string | null;
+}
+
+// Bentuk Product.to_dict() dari backend.
+export interface BackendProduct {
+  id: number;
+  category_id: number;
+  product_name: string;
+  description?: string | null;
+  price: number | string; // Numeric bisa terserialisasi sebagai string
+  stock: number;
+  created_at?: string | null;
 }

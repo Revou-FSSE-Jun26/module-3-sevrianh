@@ -1,9 +1,7 @@
 /* ============================================================
    app/orders/page.tsx — Halaman daftar pesanan (Server Component)
-   Fetch GET /orders di server, tampilkan dalam tabel read-only.
-   Catatan: dengan Fake Store API, getOrders() mengembalikan []
-   sementara, sehingga tampil state kosong. Struktur siap untuk
-   data nyata saat kembali ke backend SevoShop.
+   Fetch GET /orders/ di server, tampilkan dalam tabel read-only.
+   Data mengikuti bentuk backend SevoShop (Order.to_dict()).
    ============================================================ */
 
 import { Suspense } from "react";
@@ -37,8 +35,8 @@ async function OrderListLoader() {
           <tr key={order.id} className="border-b border-gray-100">
             <td className="py-2">{order.id}</td>
             <td className="py-2">{order.user_id}</td>
-            <td className="py-2">{order.order_items.length}</td>
-            <td className="py-2">Rp {order.total_price.toLocaleString("id-ID")}</td>
+            <td className="py-2">{order.items?.length ?? 0}</td>
+            <td className="py-2">Rp {order.total_amount.toLocaleString("id-ID")}</td>
           </tr>
         ))}
       </tbody>

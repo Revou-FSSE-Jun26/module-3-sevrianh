@@ -1,16 +1,16 @@
 /* ============================================================
    lib/api.ts — Helper pemanggilan API terpusat (SevoShop)
-   Saat ini menyasar Fake Store API (sementara) dan MENGADAPTASI
-   responsnya ke bentuk domain (Product/Category). Dengan begitu,
-   komponen tetap memakai tipe domain dan tidak perlu diubah saat
-   nanti berpindah kembali ke backend SevoShop (Render).
+   Menyasar backend SevoShop (Flask API di Render) dan
+   MENGADAPTASI respons mentah (BackendProduct/BackendCategory)
+   ke bentuk domain (Product/Category) yang dipakai komponen.
    ============================================================ */
 
 import type {
   Product,
   Category,
   Order,
-  FakeStoreProduct,
+  BackendProduct,
+  BackendCategory,
   User,
   RegisterFormData,
 } from "./types";
@@ -34,57 +34,67 @@ async function getJson<T>(path: string): Promise<T> {
 }
 
 /* ------------------------------------------------------------
-   ADAPTER: ubah FakeStoreProduct -> Product (bentuk domain).
-   - title    -> name
-   - category (string) -> Category objek (id di-hash dari nama)
-   - stock    -> Fake Store tidak punya; kita derivasi dummy stabil
+   ADAPTER: ubah bentuk mentah backend -> bentuk domain.
+   - product_name   -> name
+   - price (Numeric/string) -> number
+   - category_id    -> objek Category { id, name } (name dilengkapi
+     dari daftar kategori, atau fallback "Kategori <id>")
    ------------------------------------------------------------ */
 
-// Buat id kategori yang stabil dari nama (hash sederhana).
-function categoryIdFromName(name: string): number {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash * 31 + name.charCodeAt(i)) % 100000;
-  }
-  return hash;
+function adaptCategory(raw: BackendCategory): Category {
+  return { id: raw.id, name: raw.category_name };
 }
 
-function adaptProduct(raw: FakeStoreProduct): Product {
+function adaptProduct(raw: BackendProduct, categoryName?: string): Product {
   return {
     id: raw.id,
-    name: raw.title,
-    price: raw.price,
-    // Fake Store tidak punya stok; derivasi angka stabil dari id (0-19)
-    // agar sebagian produk tampak "habis" untuk menguji conditional rendering.
-    stock: raw.id % 20,
-    category: { id: categoryIdFromName(raw.category), name: raw.category },
-    image: raw.image,
+    name: raw.product_name,
+    price: Number(raw.price),
+    stock: raw.stock,
+    category: {
+      id: raw.category_id,
+      name: categoryName ?? `Kategori ${raw.category_id}`,
+    },
   };
 }
 
-// Mengubah string query domain (mis. "?search=foo") -> perilaku Fake Store.
-// Fake Store tidak punya pencarian server-side, jadi untuk sekarang kita
-// ambil semua produk; penyaringan dilakukan di sisi klien pada tugas berikutnya.
-export async function getProducts(_query = ""): Promise<Product[]> {
-  const raw = await getJson<FakeStoreProduct[]>(`/products`);
-  return raw.map(adaptProduct);
-}
-
-export async function getProduct(id: string): Promise<Product> {
-  const raw = await getJson<FakeStoreProduct>(`/products/${id}`);
-  return adaptProduct(raw);
-}
-
-// Fake Store: GET /products/categories -> string[]. Diadaptasi ke Category[].
+// GET /category/ -> BackendCategory[] (collection: pakai trailing slash).
 export async function getCategories(): Promise<Category[]> {
-  const names = await getJson<string[]>(`/products/categories`);
-  return names.map((name) => ({ id: categoryIdFromName(name), name }));
+  const rows = await getJson<BackendCategory[]>(`/category/`);
+  return rows.map(adaptCategory);
 }
 
-// Fake Store tidak punya /orders. Dikembalikan array kosong sementara,
-// agar halaman orders tetap bisa dibangun tanpa error.
+// Peta id kategori -> nama, untuk melengkapi category.name pada produk
+// (endpoint produk hanya mengembalikan category_id).
+async function categoryNameMap(): Promise<Map<number, string>> {
+  try {
+    const rows = await getJson<BackendCategory[]>(`/category/`);
+    return new Map(rows.map((r) => [r.id, r.category_name]));
+  } catch {
+    // Jika kategori gagal diambil, produk tetap tampil dengan nama fallback.
+    return new Map();
+  }
+}
+
+// GET /products/ -> BackendProduct[] (collection: pakai trailing slash).
+export async function getProducts(_query = ""): Promise<Product[]> {
+  const [raw, names] = await Promise.all([
+    getJson<BackendProduct[]>(`/products/`),
+    categoryNameMap(),
+  ]);
+  return raw.map((p) => adaptProduct(p, names.get(p.category_id)));
+}
+
+// GET /products/<id> -> BackendProduct (item endpoint: TANPA trailing slash).
+export async function getProduct(id: string): Promise<Product> {
+  const raw = await getJson<BackendProduct>(`/products/${id}`);
+  const names = await categoryNameMap();
+  return adaptProduct(raw, names.get(raw.category_id));
+}
+
+// GET /orders/ -> Order[] (collection: pakai trailing slash).
 export async function getOrders(): Promise<Order[]> {
-  return [];
+  return getJson<Order[]>(`/orders/`);
 }
 
 
@@ -139,11 +149,13 @@ export async function del(path: string): Promise<void> {
    penuh saat backend nyata tersedia (atau di-mock saat testing).
    ------------------------------------------------------------ */
 
+// Collection endpoint pakai trailing slash (/users/, /orders/).
+// Login adalah action path tanpa slash (/auth/login).
 export const registerUser = (data: RegisterFormData) =>
-  postJson<User>(`/users`, data);
+  postJson<User>(`/users/`, data);
 
 export const loginUser = (credentials: { email: string; password: string }) =>
   postJson<User>(`/auth/login`, credentials);
 
 export const createOrder = (items: { product_id: number; quantity: number }[]) =>
-  postJson<Order>(`/orders`, { items });
+  postJson<Order>(`/orders/`, { items });
