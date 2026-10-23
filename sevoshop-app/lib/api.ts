@@ -66,6 +66,18 @@ export async function getOrders(): Promise<Order[]> {
   return getJson<Order[]>(`/orders/`);
 }
 
+// Ambil order milik user tertentu (difilter di klien karena backend
+// /orders/ mengembalikan semua order).
+export async function getOrdersByUser(userId: number): Promise<Order[]> {
+  const all = await getOrders();
+  return all.filter((o) => o.user_id === userId);
+}
+
+// Ambil satu order (ringkasan) berdasarkan id.
+export async function getOrder(id: string): Promise<Order> {
+  return getJson<Order>(`/orders/${id}`);
+}
+
 /* ============================================================
    Operasi TULIS (POST/PUT/DELETE) + parsing error Flask.
    ============================================================ */
