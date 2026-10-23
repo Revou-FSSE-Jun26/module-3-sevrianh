@@ -28,7 +28,7 @@ export default function ProductCard({ product, showActions = true }: ProductCard
   return (
     <Card className="flex flex-col gap-2">
       <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
-      <p className="text-sm text-gray-500">{product.category.name}</p>
+      <p className="text-sm text-gray-500">Kategori #{product.categoryId}</p>
       <p className="text-gengar-violet font-bold">
         Rp {product.price.toLocaleString("id-ID")}
       </p>

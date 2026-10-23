@@ -48,7 +48,7 @@ export default function ProductList({ initialProducts }: ProductListProps) {
   const visibleProducts =
     categoryId === null
       ? products
-      : products.filter((p) => p.category.id === categoryId);
+      : products.filter((p) => p.categoryId === categoryId);
 
   // Filter berdasarkan teks pencarian di sisi klien juga (pelengkap).
   const filtered = search

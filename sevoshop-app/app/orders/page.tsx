@@ -26,7 +26,7 @@ async function OrderListLoader() {
         <tr className="border-b border-gray-200 text-gray-600">
           <th className="py-2">ID Pesanan</th>
           <th className="py-2">ID Pengguna</th>
-          <th className="py-2">Jumlah Item</th>
+          <th className="py-2">Status</th>
           <th className="py-2">Total</th>
         </tr>
       </thead>
@@ -35,7 +35,7 @@ async function OrderListLoader() {
           <tr key={order.id} className="border-b border-gray-100">
             <td className="py-2">{order.id}</td>
             <td className="py-2">{order.user_id}</td>
-            <td className="py-2">{order.items?.length ?? 0}</td>
+            <td className="py-2">{order.status ?? "-"}</td>
             <td className="py-2">Rp {order.total_amount.toLocaleString("id-ID")}</td>
           </tr>
         ))}

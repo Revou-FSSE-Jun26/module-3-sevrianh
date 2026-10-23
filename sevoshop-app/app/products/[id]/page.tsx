@@ -38,7 +38,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   return (
     <article className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6">
       <h2 className="text-2xl font-bold text-gray-800">{product.name}</h2>
-      <p className="text-sm text-gray-500">Kategori: {product.category.name}</p>
+      <p className="text-sm text-gray-500">Kategori #{product.categoryId}</p>
       <p className="text-xl font-bold text-gengar-violet">
         Rp {product.price.toLocaleString("id-ID")}
       </p>

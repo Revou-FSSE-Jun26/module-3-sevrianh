@@ -78,7 +78,7 @@ export default function AddProductForm({ onAdd }: AddProductFormProps) {
       name: form.name.trim(),
       price: Number(form.price),
       stock: Number(form.stock),
-      category: { id: 0, name: "Tanpa kategori" },
+      categoryId: 0, // tanpa kategori
     };
 
     // Serahkan ke induk (induk yang menambah ke daftar secara immutable).

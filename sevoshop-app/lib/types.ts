@@ -1,64 +1,57 @@
 /* ============================================================
    lib/types.ts — Tipe terpusat untuk aplikasi SevoShop
-   Tipe domain (Product, Category, Order) MENGIKUTI bentuk
-   backend SevoShop (Flask API di Render).
+   Mengikuti bentuk data backend Flask SevoShop (Render).
    ============================================================ */
 
-// Union type untuk status stok (dipakai conditional styling).
+// Union type status stok (dipakai conditional styling di UI).
 export type StockStatus = "in-stock" | "low-stock" | "out-of-stock";
 
-// Kategori produk (bentuk domain SevoShop: objek dengan id & name).
+// Kategori (backend: /category/, field category_name).
 export interface Category {
   id: number;
-  name: string;
+  name: string;        // dipetakan dari category_name
+  description?: string;
 }
 
-// Produk (bentuk domain SevoShop).
+// Produk (backend: /products/, field product_name, price string, category_id).
 export interface Product {
   id: number;
-  name: string;
-  price: number;
+  name: string;        // dipetakan dari product_name
+  price: number;       // dikonversi dari string "125000.00"
   stock: number;
-  category: Category; // objek bersarang
+  categoryId: number;  // dipetakan dari category_id
+  description?: string;
 }
 
-// Item di dalam sebuah order (bentuk backend: order_items[].to_dict()).
-export interface OrderItem {
-  id?: number;
-  order_id?: number;
-  product_id: number;
-  quantity: number;
-  price_at_purchase?: number;
-  subtotal?: number;
-}
-
-// Order (bentuk backend SevoShop: Order.to_dict()).
+// Order (backend: /orders/).
 export interface Order {
   id: number;
   user_id: number;
   total_amount: number;
-  status: string;
+  status?: string;
   ordered_at?: string;
-  is_deleted?: boolean;
-  items?: OrderItem[]; // hadir saat include_items=True
+}
+
+// Item dalam order (dipakai detail order & pembuatan order).
+export interface OrderItem {
+  product_id: number;
+  quantity: number;
 }
 
 /* ------------------------------------------------------------
-   Tipe untuk Checkpoint 3: autentikasi & keranjang.
+   Tipe autentikasi & keranjang (Checkpoint 3).
    ------------------------------------------------------------ */
 
-// Peran pengguna (union type) menentukan hak akses.
-export type UserRole = "admin" | "customer";
+// Peran pengguna dari backend. Backend memakai "buyer"/"admin".
+export type UserRole = "admin" | "buyer";
 
-// Pengguna yang login (disimpan di AuthContext & localStorage).
 export interface User {
   id: number;
   username: string;
   email: string;
-  role?: UserRole; // opsional; backend menentukan saat login
+  role?: UserRole;
 }
 
-// Data form registrasi (semua string karena berasal dari <input>).
 export interface RegisterFormData {
   username: string;
   email: string;
@@ -66,32 +59,27 @@ export interface RegisterFormData {
   confirmPassword: string;
 }
 
-// Satu item di dalam keranjang: produk + kuantitas.
 export interface CartItem {
   product: Product;
   quantity: number;
 }
 
 /* ------------------------------------------------------------
-   Tipe MENTAH dari backend SevoShop (Flask). Dipakai oleh
-   adapter di lib/api.ts untuk diubah ke bentuk domain.
+   Tipe MENTAH dari backend (dipakai adapter di lib/api.ts).
    ------------------------------------------------------------ */
-
-// Bentuk Category.to_dict() dari backend.
-export interface BackendCategory {
+export interface RawProduct {
   id: number;
-  category_name: string;
-  description?: string | null;
-  created_at?: string | null;
+  product_name: string;
+  price: string;      // backend mengirim string, mis. "125000.00"
+  stock: number;
+  category_id: number;
+  description?: string;
+  created_at?: string;
 }
 
-// Bentuk Product.to_dict() dari backend.
-export interface BackendProduct {
+export interface RawCategory {
   id: number;
-  category_id: number;
-  product_name: string;
-  description?: string | null;
-  price: number | string; // Numeric bisa terserialisasi sebagai string
-  stock: number;
-  created_at?: string | null;
+  category_name: string;
+  description?: string;
+  created_at?: string;
 }
