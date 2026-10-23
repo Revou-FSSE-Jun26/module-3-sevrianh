@@ -7,8 +7,8 @@
 
 import { useState } from "react";
 import type { Product } from "@/lib/types";
-import { getButtonClasses } from "@/lib/ui";
 import Card from "./Card";
+import AddToCartButton from "./AddToCartButton";
 
 /* ProductCardProps (Req 2.2): mengetik props komponen.
    - product : data produk yang ditampilkan (wajib)
@@ -64,10 +64,8 @@ export default function ProductCard({ product, showActions = true }: ProductCard
             </button>
           </div>
 
-          {/* getButtonClasses (Req 4.2): class berbeda untuk tersedia vs habis. */}
-          <button type="button" disabled={!inStock} className={getButtonClasses(inStock)}>
-            {inStock ? "Tambah ke Keranjang" : "Tidak Tersedia"}
-          </button>
+          {/* AddToCartButton: "Tambah ke Keranjang" (login) atau "Login to buy". */}
+          <AddToCartButton product={product} />
         </div>
       )}
     </Card>
