@@ -116,5 +116,14 @@ export const registerUser = (data: RegisterFormData) =>
 export const loginUser = (credentials: { email: string; password: string }) =>
   postJson<User>(`/auth/login`, credentials);
 
-export const createOrder = (items: { product_id: number; quantity: number }[]) =>
-  postJson<Order>(`/orders/`, { items });
+// Backend butuh user_id + items. Respons dibungkus { order }.
+export async function createOrder(
+  userId: number,
+  items: { product_id: number; quantity: number }[]
+): Promise<Order> {
+  const result = await postJson<{ order: Order }>(`/orders/`, {
+    user_id: userId,
+    items,
+  });
+  return result.order;
+}
