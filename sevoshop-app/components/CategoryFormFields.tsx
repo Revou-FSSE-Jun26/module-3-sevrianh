@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import type { CategoryInput } from "@/lib/api";
+import { notifyError } from "@/lib/toast";
 
 interface CategoryFormFieldsProps {
   initial?: Partial<CategoryInput>;
@@ -32,7 +33,9 @@ export default function CategoryFormFields({
     try {
       await onSubmit({ category_name: name.trim() });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Operasi gagal.");
+      const msg = err instanceof Error ? err.message : "Operasi gagal.";
+      setError(msg);
+      notifyError(msg);
     } finally {
       setSubmitting(false);
     }

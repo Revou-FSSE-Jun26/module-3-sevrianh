@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import type { ProductInput } from "@/lib/api";
+import { notifyError } from "@/lib/toast";
 
 interface ProductFormFieldsProps {
   initial?: Partial<ProductInput>;
@@ -45,8 +46,10 @@ export default function ProductFormFields({
         category_id: Number(categoryId),
       });
     } catch (err) {
-      // Error form-level dari backend (mis. 400 { error }).
-      setError(err instanceof Error ? err.message : "Operasi gagal.");
+      // Error form-level dari backend (mis. 400 { error }) + toast (Req 12.3).
+      const msg = err instanceof Error ? err.message : "Operasi gagal.";
+      setError(msg);
+      notifyError(msg);
     } finally {
       setSubmitting(false);
     }
