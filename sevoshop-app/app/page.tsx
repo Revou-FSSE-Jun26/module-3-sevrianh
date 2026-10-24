@@ -29,7 +29,9 @@ async function FeaturedProducts() {
 export default function HomePage() {
   return (
     <section className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-gray-800">Produk Unggulan</h1>
+      <h1 data-testid="home-heading" className="text-2xl font-bold text-gray-800">
+        Produk Unggulan
+      </h1>
       {/* Streaming: tampilkan fallback selama produk di-fetch. */}
       <Suspense fallback={<p className="text-gray-500">Memuat produk...</p>}>
         <FeaturedProducts />

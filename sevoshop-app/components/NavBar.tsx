@@ -34,6 +34,7 @@ export default function NavBar() {
             <li key={link.href}>
               <Link
                 href={link.href}
+                data-testid={`nav-${link.href === "/" ? "home" : link.href.slice(1)}`}
                 // Styling berbeda untuk route aktif (penanda).
                 className={
                   isActive
