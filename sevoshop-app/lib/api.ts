@@ -164,3 +164,25 @@ export async function updateProduct(id: number, input: ProductInput): Promise<Pr
 export function deleteProduct(id: number): Promise<void> {
   return del(`/products/${id}`);
 }
+
+/* --- CRUD Kategori (dashboard admin) ---
+   Endpoint: /category/ (singular). Payload: category_name, description.
+   Respons dibungkus { category }. */
+export interface CategoryInput {
+  category_name: string;
+  description?: string;
+}
+
+export async function createCategory(input: CategoryInput): Promise<Category> {
+  const result = await postJson<{ category: RawCategory }>(`/category/`, input);
+  return adaptCategory(result.category);
+}
+
+export async function updateCategory(id: number, input: CategoryInput): Promise<Category> {
+  const result = await putJson<{ category: RawCategory }>(`/category/${id}`, input);
+  return adaptCategory(result.category);
+}
+
+export function deleteCategory(id: number): Promise<void> {
+  return del(`/category/${id}`);
+}
