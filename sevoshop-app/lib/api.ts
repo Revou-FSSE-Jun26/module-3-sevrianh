@@ -139,3 +139,28 @@ export async function createOrder(
   });
   return result.order;
 }
+
+/* --- CRUD Produk (dashboard admin) ---
+   Payload backend: product_name, price, stock, category_id, description.
+   Respons dibungkus { product }. */
+export interface ProductInput {
+  product_name: string;
+  price: number;
+  stock: number;
+  category_id: number;
+  description?: string;
+}
+
+export async function createProduct(input: ProductInput): Promise<Product> {
+  const result = await postJson<{ product: RawProduct }>(`/products/`, input);
+  return adaptProduct(result.product);
+}
+
+export async function updateProduct(id: number, input: ProductInput): Promise<Product> {
+  const result = await putJson<{ product: RawProduct }>(`/products/${id}`, input);
+  return adaptProduct(result.product);
+}
+
+export function deleteProduct(id: number): Promise<void> {
+  return del(`/products/${id}`);
+}
