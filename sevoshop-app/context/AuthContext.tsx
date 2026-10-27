@@ -1,9 +1,15 @@
-"use client";
+﻿"use client";
 
 /* ============================================================
    context/AuthContext.tsx — State autentikasi global
    Menyimpan sesi pengguna, memulihkannya dari localStorage saat
    aplikasi dimuat, dan menyediakan login/logout.
+
+   PENTING: pemulihan sesi dari localStorage terjadi di useEffect
+   (setelah mount). Selama proses itu belum selesai, kita BELUM tahu
+   apakah pengguna login. Flag `isLoading` menandai masa "belum tahu"
+   agar guard (ProtectedRoute/AdminRoute/PublicOnlyRoute) tidak salah
+   me-redirect sebelum sesi sempat dipulihkan.
    ============================================================ */
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -17,6 +23,7 @@ const STORAGE_KEY = "sevoshop_user";
 interface AuthContextValue {
   currentUser: User | null;
   isLoggedIn: boolean;
+  isLoading: boolean; // true sampai sesi selesai dipulihkan dari localStorage
   login: (user: User) => void;
   logout: () => void;
 }
@@ -26,6 +33,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // Mulai dalam keadaan "memuat" sampai useEffect pemulihan selesai.
+  const [isLoading, setIsLoading] = useState(true);
 
   // Pulihkan sesi dari localStorage saat komponen pertama mount (Req 2.3).
   useEffect(() => {
@@ -37,6 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(STORAGE_KEY); // data rusak -> bersihkan
       }
     }
+    // Pemulihan selesai: guard sekarang boleh mengambil keputusan.
+    setIsLoading(false);
   }, []);
 
   // Simpan user ke state DAN localStorage agar bertahan setelah refresh.
@@ -54,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextValue = {
     currentUser,
     isLoggedIn: currentUser !== null,
+    isLoading,
     login,
     logout,
   };
