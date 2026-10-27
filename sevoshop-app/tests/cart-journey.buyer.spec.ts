@@ -10,10 +10,10 @@
    (Server Component), sehingga page.route() (yang hanya mencegat
    request browser) tidak bisa mengontrolnya. Karena itu kita menyuntik
    keranjang langsung ke localStorage ("sevoshop_cart") lewat
-   page.evaluate SETELAH origin terbuka (agar tidak bertabrakan dengan
-   storageState), lalu reload. CartProvider akan memulihkan state ini
-   saat mount. Halaman /cart, /checkout, dan /orders semuanya Client
-   Component, jadi fetch-nya aman di-mock dengan page.route().
+   addInitScript — skrip ini berjalan SEBELUM skrip halaman pada setiap
+   navigasi, jadi CartProvider langsung memulihkan keranjang saat mount
+   tanpa perlu reload (lebih deterministik). Halaman /cart, /checkout,
+   dan /orders semuanya Client Component, jadi fetch-nya aman di-mock.
 
    Alur: keranjang terisi -> /cart -> Checkout -> Confirm Order ->
    redirect /orders.
@@ -33,6 +33,11 @@ const cartItem = {
 };
 
 test.beforeEach(async ({ page }) => {
+  // Tanam keranjang SEBELUM halaman memuat (berlaku untuk semua navigasi).
+  await page.addInitScript((item) => {
+    localStorage.setItem("sevoshop_cart", JSON.stringify([item]));
+  }, cartItem);
+
   // Mock orders list + pembuatan order (halaman client-side).
   await page.route("**/orders/", async (route) => {
     if (route.request().method() === "GET") {
@@ -57,17 +62,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("buyer: keranjang -> checkout -> pesanan", async ({ page }) => {
-  // Buka origin dulu agar localStorage (dari storageState) tersedia,
-  // lalu tanam keranjang. Pakai /cart sebagai halaman origin pertama.
+  // 1. Buka keranjang; item yang ditanam tampil beserta total.
   await page.goto("/cart");
-  await page.evaluate((item) => {
-    localStorage.setItem("sevoshop_cart", JSON.stringify([item]));
-  }, cartItem);
-
-  // Reload agar CartProvider memulihkan keranjang yang baru ditanam.
-  await page.reload();
-
-  // 1. Keranjang: item tampil beserta total.
   await expect(page.getByRole("cell", { name: "Kaos Gengar" })).toBeVisible();
   await expect(page.getByText("Total: Rp 150.000")).toBeVisible();
 

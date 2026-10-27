@@ -1,4 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+﻿# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -30,8 +30,12 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files: abaikan semua, KECUALI file non-rahasia di bawah.
+# .env.local berisi konfigurasi lokal -> tetap diabaikan.
 .env*
+!.env.example
+!.env.production
+!.env.test
 
 # vercel
 .vercel
@@ -48,3 +52,4 @@ next-env.d.ts
 /playwright/.cache/
 /tests/.auth/
 /blob-report/
+

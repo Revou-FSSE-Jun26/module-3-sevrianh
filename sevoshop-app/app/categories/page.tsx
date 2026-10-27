@@ -1,10 +1,16 @@
-/* ============================================================
+﻿/* ============================================================
    app/categories/page.tsx — Halaman daftar kategori (Server Component)
    Fetch GET /categories di server, tampilkan sebagai daftar.
    Pola sama dengan /products: Suspense + loading + error.
+
+   STRATEGI RENDERING (Req 14.1): CACHED + revalidasi berkala (mirip ISR).
+   Kategori jarang berubah, jadi loader memakai direktif "use cache" dengan
+   cacheLife('hours'). Hasilnya di-prerender ke static shell dan di-refresh
+   tiap beberapa jam — cepat untuk pengguna, tetap cukup segar.
    ============================================================ */
 
 import { Suspense } from "react";
+import { cacheLife } from "next/cache";
 import { getCategories } from "@/lib/api";
 import Card from "@/components/Card";
 
@@ -16,6 +22,9 @@ export const metadata = {
 
 // Sub-komponen async yang melakukan fetch (dibungkus Suspense).
 async function CategoryListLoader() {
+  "use cache"; // hasil komponen ini boleh di-cache (Next.js 16 cacheComponents)
+  cacheLife("hours"); // refresh berkala tiap beberapa jam
+
   const categories = await getCategories(); // GET /categories (Req 11.4)
 
   if (categories.length === 0) {
