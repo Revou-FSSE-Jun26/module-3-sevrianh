@@ -53,3 +53,5 @@ next-env.d.ts
 /tests/.auth/
 /blob-report/
 
+# Skrip bantu lokal (mis. capture screenshot) - tidak di-push
+/scripts/
