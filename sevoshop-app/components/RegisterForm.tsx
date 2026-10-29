@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { RegisterFormData } from "@/lib/types";
-import { registerUser } from "@/lib/api";
+import { registerUser, loginUser } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { notifySuccess, notifyError } from "@/lib/toast";
 
@@ -66,9 +66,15 @@ export default function RegisterForm() {
 
     setSubmitting(true);
     try {
-      // POST /users; backend mengembalikan user baru (Req 1.4).
-      const user = await registerUser(form);
-      login(user); // simpan sesi ke AuthContext + localStorage
+      // POST /users; backend mengembalikan user baru TANPA token (Req 1.4).
+      await registerUser(form);
+      // Registrasi tidak mengembalikan JWT, jadi langsung login untuk
+      // memperoleh token asli + profil lengkap, lalu simpan sesi (Req 2.7).
+      const { user, token } = await loginUser({
+        email: form.email,
+        password: form.password,
+      });
+      login(user, token); // simpan sesi + token ke AuthContext + localStorage
       notifySuccess("Registrasi berhasil!");
       router.push("/");
     } catch (err) {

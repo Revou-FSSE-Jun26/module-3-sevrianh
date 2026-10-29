@@ -18,10 +18,27 @@ import type {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+/* --- Auth helper ---
+   lib/api.ts adalah modul biasa (bukan komponen React), jadi tidak bisa
+   memakai hook useAuth. Token dibaca langsung dari localStorage dengan
+   kunci yang sama seperti AuthContext (TOKEN_KEY = "sevoshop_token").
+   Guard `typeof window` agar aman saat dieksekusi di server (SSR). */
+function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("sevoshop_token");
+}
+
+// Bentuk header Authorization bila token tersedia; kosong bila tidak.
+function authHeaders(): Record<string, string> {
+  const t = getToken();
+  return t ? { Authorization: `Bearer ${t}` } : {};
+}
+
 // --- GET generic dengan pemeriksaan res.ok (lapisan error 1) ---
-async function getJson<T>(path: string): Promise<T> {
+// `auth=true` melampirkan Authorization header untuk GET terproteksi.
+async function getJson<T>(path: string, auth = false): Promise<T> {
   if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
-  const res = await fetch(`${BASE_URL}${path}`);
+  const res = await fetch(`${BASE_URL}${path}`, auth ? { headers: authHeaders() } : undefined);
   if (!res.ok) throw new Error(`Permintaan gagal (${res.status}) untuk ${path}`);
   return res.json() as Promise<T>;
 }
@@ -97,7 +114,7 @@ export async function postJson<T>(path: string, data: unknown): Promise<T> {
   if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error(await extractError(res));
@@ -108,7 +125,7 @@ export async function putJson<T>(path: string, data: unknown): Promise<T> {
   if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error(await extractError(res));
@@ -117,7 +134,7 @@ export async function putJson<T>(path: string, data: unknown): Promise<T> {
 
 export async function del(path: string): Promise<void> {
   if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
-  const res = await fetch(`${BASE_URL}${path}`, { method: "DELETE" });
+  const res = await fetch(`${BASE_URL}${path}`, { method: "DELETE", headers: { ...authHeaders() } });
   if (!res.ok) throw new Error(await extractError(res));
 }
 
@@ -125,8 +142,40 @@ export async function del(path: string): Promise<void> {
 export const registerUser = (data: RegisterFormData) =>
   postJson<User>(`/users/`, data);
 
-export const loginUser = (credentials: { email: string; password: string }) =>
-  postJson<User>(`/auth/login`, credentials);
+/* --- Login ---
+   Backend /auth/login hanya mengembalikan { success, message, token }.
+   Jadi: 1) kirim kredensial -> dapat JWT, 2) GET /auth/me (Bearer token)
+   untuk profil lengkap (termasuk role). Endpoint GET /users/<id> kini
+   admin-only, sehingga pengambilan profil lewat /auth/me lebih tepat dan
+   berlaku untuk semua peran (buyer maupun admin). */
+
+interface LoginResponse {
+  success: boolean;
+  message: string;
+  token?: string;
+}
+
+export async function loginUser(credentials: {
+  email: string;
+  password: string;
+}): Promise<{ user: User; token: string }> {
+  if (!BASE_URL) throw new Error("NEXT_PUBLIC_API_BASE_URL belum dikonfigurasi.");
+
+  // 1) Login -> token
+  const res = await postJson<LoginResponse>(`/auth/login`, credentials);
+  if (!res.token) throw new Error(res.message || "Login gagal");
+
+  // 2) Ambil profil dari /auth/me dengan token sebagai Bearer header.
+  const meRes = await fetch(`${BASE_URL}/auth/me`, {
+    headers: { Authorization: `Bearer ${res.token}` },
+  });
+  if (!meRes.ok) {
+    throw new Error(`Gagal mengambil profil pengguna (${meRes.status})`);
+  }
+  const user = (await meRes.json()) as User;
+
+  return { user, token: res.token };
+}
 
 // Backend butuh user_id + items. Respons dibungkus { order }.
 export async function createOrder(

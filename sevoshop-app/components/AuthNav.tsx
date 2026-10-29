@@ -13,8 +13,18 @@ export default function AuthNav() {
   const { currentUser, isLoggedIn, logout } = useAuth();
 
   if (isLoggedIn && currentUser) {
+    // Tautan Dashboard hanya untuk admin (Req 2.10, 2.11). Pengguna non-admin
+    // dan yang belum login tidak melihatnya. Sumber kebenaran tetap backend:
+    // bila klien dirusak, endpoint terproteksi tetap menolak 401/403.
+    const isAdmin = currentUser.role === "admin";
+
     return (
       <div className="flex items-center gap-3 text-sm">
+        {isAdmin && (
+          <Link href="/dashboard" className="hover:text-gengar-palered">
+            Dashboard
+          </Link>
+        )}
         <span className="font-medium">Halo, {currentUser.username}</span>
         <button
           type="button"

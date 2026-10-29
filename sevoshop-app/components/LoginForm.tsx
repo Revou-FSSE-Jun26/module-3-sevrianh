@@ -9,7 +9,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { User } from "@/lib/types";
 import { loginUser } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { notifySuccess, notifyError } from "@/lib/toast";
@@ -29,13 +28,11 @@ export default function LoginForm() {
     setSubmitting(true);
 
     try {
-      // POST /auth/login (Req 3.2). Backend mengembalikan data user.
-      const result = await loginUser({ email, password });
+      // POST /auth/login (Req 3.2). loginUser mengembalikan { user, token }:
+      // token JWT dari backend + profil lengkap (termasuk role) via /auth/me.
+      const { user, token } = await loginUser({ email, password });
 
-      // Tangani kemungkinan respons dibungkus { user } atau user langsung.
-      const user = ((result as unknown as { user?: User }).user ?? result) as User;
-
-      login(user); // simpan sesi (Req 3.3)
+      login(user, token); // simpan sesi + token (Req 2.7, 3.3)
       notifySuccess("Login berhasil!");
 
       // Redirect per role.

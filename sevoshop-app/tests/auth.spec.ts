@@ -17,6 +17,30 @@ test("registrasi berhasil -> redirect ke home & username di header", async ({ pa
       await route.fallback();
     }
   });
+  // Setelah registrasi, RegisterForm memanggil loginUser() yang melakukan
+  // POST /auth/login (-> token) lalu GET /auth/me (-> profil). Mock keduanya.
+  await page.route("**/auth/login", async (route) => {
+    if (route.request().method() === "POST") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ success: true, message: "ok", token: "e2e.fake.token" }),
+      });
+    } else {
+      await route.fallback();
+    }
+  });
+  await page.route("**/auth/me", async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(fakeUser),
+      });
+    } else {
+      await route.fallback();
+    }
+  });
   // Mock produk di home agar tidak bergantung backend.
   await page.route("**/products/**", (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: "[]" })
