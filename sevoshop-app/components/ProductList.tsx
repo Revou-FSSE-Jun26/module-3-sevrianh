@@ -16,6 +16,7 @@ import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
 import ProductGrid from "./ProductGrid";
 import AddProductForm from "./AddProductForm";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProductListProps {
   initialProducts: Product[]; // produk awal dari Server Component (Req 13.1)
@@ -24,6 +25,10 @@ interface ProductListProps {
 export default function ProductList({ initialProducts }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categoryId, setCategoryId] = useState<number | null>(null);
+
+  // Hanya admin yang boleh melihat form tambah produk (UX gate; backend tetap penjaga).
+  const { currentUser } = useAuth();
+  const isAdmin = currentUser?.role === "admin";
 
   // Baca query pencarian dari URL (Req 8.2, 13.3).
   const searchParams = useSearchParams();
@@ -66,7 +71,7 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         <CategoryFilter onSelect={setCategoryId} />
       </div>
 
-      <AddProductForm onAdd={handleAdd} />
+      {isAdmin && <AddProductForm onAdd={handleAdd} />}
 
       {search && (
         <p className="text-sm text-gray-500">
