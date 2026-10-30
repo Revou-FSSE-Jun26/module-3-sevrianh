@@ -165,8 +165,8 @@ module-3-sevrianh/
 ## Screenshot
 
 Satu tampilan untuk tiap route aplikasi (gambar di `sevoshop-app/docs/screenshots/`).
-Tabel di bawah memetakan setiap route ke file screenshot-nya. Tanda _(belum)_
-berarti file gambar perlu ditambahkan.
+Tabel di bawah memetakan setiap route ke file screenshot-nya. Screenshot
+di-generate ulang lewat `npm run screenshots` (Playwright).
 
 | Route | Halaman | File |
 |-------|---------|------|
@@ -176,13 +176,13 @@ berarti file gambar perlu ditambahkan.
 | `/categories` | Daftar Kategori | `categories.png` |
 | `/register` | Registrasi | `register.png` |
 | `/login` | Login | `login.png` |
-| `/cart` | Keranjang | `cart.png` _(belum)_ |
-| `/checkout` | Checkout | `checkout.png` _(belum)_ |
-| `/orders` | Daftar Pesanan | `orders.png` _(belum)_ |
-| `/orders/[id]` | Detail Pesanan | `order-detail.png` _(belum)_ |
+| `/cart` | Keranjang | `cart.png` |
+| `/checkout` | Checkout | `checkout.png` |
+| `/orders` | Daftar Pesanan | `orders.png` |
+| `/orders/[id]` | Detail Pesanan | `order-detail.png` |
 | `/dashboard` | Dashboard Admin – Produk | `dashboard.png` |
-| `/dashboard/categories` | Dashboard Admin – Kategori | `dashboard-categories.png` _(belum)_ |
-| `/dashboard/orders` | Dashboard Admin – Pesanan | `dashboard-orders.png` _(belum)_ |
+| `/dashboard/categories` | Dashboard Admin – Kategori | `dashboard-categories.png` |
+| `/dashboard/orders` | Dashboard Admin – Pesanan | `dashboard-orders.png` |
 
 ### Publik
 
@@ -228,6 +228,4 @@ berarti file gambar perlu ditambahkan.
 
 #### Dashboard Admin – Pesanan — `/dashboard/orders`
 ![Dashboard Pesanan](sevoshop-app/docs/screenshots/dashboard-orders.png)
-
-### Cart
 
