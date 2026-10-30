@@ -7,6 +7,7 @@
    ============================================================ */
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import AdminRoute from "@/components/AdminRoute";
 import Modal from "@/components/Modal";
 import ProductFormFields from "@/components/ProductFormFields";
@@ -70,6 +71,23 @@ function DashboardContent() {
 
   return (
     <section className="flex flex-col gap-4">
+      {/* Navigasi manajemen admin: tombol menuju route terpisah
+          untuk kelola Kategori dan Pesanan. */}
+      <nav aria-label="Navigasi manajemen admin" className="flex flex-wrap gap-3">
+        <Link
+          href="/dashboard/categories"
+          className="rounded-md border border-gengar-indigo px-4 py-2 font-medium text-gengar-indigo transition-colors hover:bg-gengar-indigo hover:text-white"
+        >
+          Kelola Kategori
+        </Link>
+        <Link
+          href="/dashboard/orders"
+          className="rounded-md border border-gengar-indigo px-4 py-2 font-medium text-gengar-indigo transition-colors hover:bg-gengar-indigo hover:text-white"
+        >
+          Kelola Pesanan
+        </Link>
+      </nav>
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Manajemen Produk</h1>
         <button

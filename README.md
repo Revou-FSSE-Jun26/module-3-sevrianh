@@ -164,26 +164,70 @@ module-3-sevrianh/
 
 ## Screenshot
 
-Satu tampilan untuk tiap halaman utama (gambar di `sevoshop-app/docs/screenshots/`).
+Satu tampilan untuk tiap route aplikasi (gambar di `sevoshop-app/docs/screenshots/`).
+Tabel di bawah memetakan setiap route ke file screenshot-nya. Tanda _(belum)_
+berarti file gambar perlu ditambahkan.
 
-### Home
+| Route | Halaman | File |
+|-------|---------|------|
+| `/` | Home | `home.png` |
+| `/products` | Daftar Produk | `products.png` |
+| `/products/[id]` | Detail Produk | `product-detail.png` |
+| `/categories` | Daftar Kategori | `categories.png` |
+| `/register` | Registrasi | `register.png` |
+| `/login` | Login | `login.png` |
+| `/cart` | Keranjang | `cart.png` _(belum)_ |
+| `/checkout` | Checkout | `checkout.png` _(belum)_ |
+| `/orders` | Daftar Pesanan | `orders.png` _(belum)_ |
+| `/orders/[id]` | Detail Pesanan | `order-detail.png` _(belum)_ |
+| `/dashboard` | Dashboard Admin – Produk | `dashboard.png` |
+| `/dashboard/categories` | Dashboard Admin – Kategori | `dashboard-categories.png` _(belum)_ |
+| `/dashboard/orders` | Dashboard Admin – Pesanan | `dashboard-orders.png` _(belum)_ |
+
+### Publik
+
+#### Home — `/`
 ![Home](sevoshop-app/docs/screenshots/home.png)
 
-### Daftar Produk
+#### Daftar Produk — `/products`
 ![Daftar Produk](sevoshop-app/docs/screenshots/products.png)
 
-### Detail Produk
+#### Detail Produk — `/products/[id]`
 ![Detail Produk](sevoshop-app/docs/screenshots/product-detail.png)
 
-### Daftar Kategori
+#### Daftar Kategori — `/categories`
 ![Daftar Kategori](sevoshop-app/docs/screenshots/categories.png)
 
-### Registrasi
+#### Registrasi — `/register`
 ![Registrasi](sevoshop-app/docs/screenshots/register.png)
 
-### Login
+#### Login — `/login`
 ![Login](sevoshop-app/docs/screenshots/login.png)
 
-### Dashboard Admin
+### Butuh Login (Buyer)
+
+#### Keranjang — `/cart`
+![Keranjang](sevoshop-app/docs/screenshots/cart.png)
+
+#### Checkout — `/checkout`
+![Checkout](sevoshop-app/docs/screenshots/checkout.png)
+
+#### Daftar Pesanan — `/orders`
+![Daftar Pesanan](sevoshop-app/docs/screenshots/orders.png)
+
+#### Detail Pesanan — `/orders/[id]`
+![Detail Pesanan](sevoshop-app/docs/screenshots/order-detail.png)
+
+### Admin
+
+#### Dashboard Admin – Produk — `/dashboard`
 ![Dashboard Admin](sevoshop-app/docs/screenshots/dashboard.png)
+
+#### Dashboard Admin – Kategori — `/dashboard/categories`
+![Dashboard Kategori](sevoshop-app/docs/screenshots/dashboard-categories.png)
+
+#### Dashboard Admin – Pesanan — `/dashboard/orders`
+![Dashboard Pesanan](sevoshop-app/docs/screenshots/dashboard-orders.png)
+
+### Cart
 

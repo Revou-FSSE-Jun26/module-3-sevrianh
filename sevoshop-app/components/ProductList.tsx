@@ -8,10 +8,10 @@
    - menyediakan CategoryFilter yang memfilter per kategori
    ============================================================ */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getProducts } from "@/lib/api";
-import type { Product } from "@/lib/types";
+import { getProducts, getCategories } from "@/lib/api";
+import type { Product, Category } from "@/lib/types";
 import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
 import ProductGrid from "./ProductGrid";
@@ -25,6 +25,7 @@ interface ProductListProps {
 export default function ProductList({ initialProducts }: ProductListProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Hanya admin yang boleh melihat form tambah produk (UX gate; backend tetap penjaga).
   const { currentUser } = useAuth();
@@ -41,6 +42,20 @@ export default function ProductList({ initialProducts }: ProductListProps) {
       .then(setProducts)
       .catch(() => setProducts([]));
   }, [search]);
+
+  // Fetch kategori SEKALI saat mount untuk memetakan id -> nama kategori,
+  // dipakai di kartu produk dan diteruskan ke CategoryFilter (hindari double fetch).
+  useEffect(() => {
+    getCategories()
+      .then(setCategories)
+      .catch(() => setCategories([]));
+  }, []);
+
+  // Peta id kategori -> nama, dibangun ulang hanya saat daftar kategori berubah.
+  const categoryNames = useMemo(
+    () => new Map(categories.map((c) => [c.id, c.name])),
+    [categories]
+  );
 
   // Tambah produk baru ke daftar secara IMMUTABLE (Req 5.4): buat
   // array baru dengan spread, taruh produk baru di depan.
@@ -68,7 +83,7 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         <div className="flex-1">
           <SearchBar initialQuery={search} />
         </div>
-        <CategoryFilter onSelect={setCategoryId} />
+        <CategoryFilter onSelect={setCategoryId} categories={categories} />
       </div>
 
       {isAdmin && <AddProductForm onAdd={handleAdd} />}
@@ -79,7 +94,7 @@ export default function ProductList({ initialProducts }: ProductListProps) {
         </p>
       )}
 
-      <ProductGrid products={filtered} />
+      <ProductGrid products={filtered} categoryNames={categoryNames} />
     </div>
   );
 }

@@ -6,6 +6,7 @@
    ============================================================ */
 
 import { useState } from "react";
+import Link from "next/link";
 import type { Product } from "@/lib/types";
 import Card from "./Card";
 import AddToCartButton from "./AddToCartButton";
@@ -16,29 +17,45 @@ import AddToCartButton from "./AddToCartButton";
 export interface ProductCardProps {
   product: Product;
   showActions?: boolean;
+  // Nama kategori opsional. Bila tersedia, ditampilkan menggantikan
+  // "Kategori #id". Diteruskan dari ProductGrid (dipetakan dari id).
+  categoryName?: string;
 }
 
 // Destructuring defaults (Req 2.3): showActions default-nya true.
-export default function ProductCard({ product, showActions = true }: ProductCardProps) {
+export default function ProductCard({ product, showActions = true, categoryName }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
 
   // Turunkan ketersediaan stok dari data bertipe.
   const inStock = product.stock > 0;
 
   return (
-    <Card className="flex flex-col gap-2">
-      <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
-      <p className="text-sm text-gray-500">Kategori #{product.categoryId}</p>
-      <p className="text-gengar-violet font-bold">
-        Rp {product.price.toLocaleString("id-ID")}
-      </p>
+    <Card className="flex flex-col gap-2 transition-shadow hover:shadow-md">
+      {/* Bagian info produk clickable -> halaman detail. Dibuat sebagai
+          Link terpisah (bukan membungkus seluruh kartu) agar klik pada
+          counter & tombol "Tambah ke Keranjang" tidak ikut bernavigasi. */}
+      <Link
+        href={`/products/${product.id}`}
+        data-testid={`product-link-${product.id}`}
+        className="group flex flex-col gap-1 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-gengar-violet"
+      >
+        <h3 className="text-lg font-semibold text-gray-800 group-hover:text-gengar-violet group-hover:underline">
+          {product.name}
+        </h3>
+        <p className="text-sm text-gray-500">
+          {categoryName ? `Kategori: ${categoryName}` : `Kategori #${product.categoryId}`}
+        </p>
+        <p className="text-gengar-violet font-bold">
+          Rp {product.price.toLocaleString("id-ID")}
+        </p>
 
-      {/* Conditional rendering (Req 4.1): label stok berdasarkan field bertipe. */}
-      {inStock ? (
-        <p className="text-sm text-green-600">Stok: {product.stock}</p>
-      ) : (
-        <p className="text-sm text-red-600">Stok habis</p>
-      )}
+        {/* Conditional rendering (Req 4.1): label stok berdasarkan field bertipe. */}
+        {inStock ? (
+          <p className="text-sm text-green-600">Stok: {product.stock}</p>
+        ) : (
+          <p className="text-sm text-red-600">Stok habis</p>
+        )}
+      </Link>
 
       {/* showActions mengatur apakah counter & tombol tampil. */}
       {showActions && (

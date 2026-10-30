@@ -22,6 +22,7 @@ interface CartContextValue {
   items: CartItem[];
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: number) => void;
+  updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   total: number;
 }
@@ -75,6 +76,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((it) => it.product.id !== productId));
   }
 
+  // Set kuantitas absolut sebuah produk (update immutable). Bila kuantitas
+  // baru <= 0, item dihapus dari keranjang. Dibatasi oleh stok produk.
+  function updateQuantity(productId: number, quantity: number) {
+    setItems((prev) => {
+      if (quantity <= 0) {
+        return prev.filter((it) => it.product.id !== productId);
+      }
+      return prev.map((it) =>
+        it.product.id === productId
+          ? { ...it, quantity: Math.min(quantity, it.product.stock) }
+          : it
+      );
+    });
+  }
+
   // Kosongkan keranjang.
   function clearCart() {
     setItems([]);
@@ -90,6 +106,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     items,
     addToCart,
     removeFromCart,
+    updateQuantity,
     clearCart,
     total,
   };

@@ -1,12 +1,14 @@
 "use client";
 
 /* ============================================================
-   app/dashboard/categories/page.tsx — Manajemen kategori (admin, Tugas 11)
-   AdminRoute. Tabel kategori + create/edit (modal) + delete (konfirmasi inline).
-   Delete ditolak backend (400, ada produk terkait) -> pesan error.
+   app/dashboard/categories/page.tsx — Manajemen kategori (admin)
+   AdminRoute. Tabel kategori + create (modal) + edit (modal) +
+   delete (konfirmasi inline). State lokal diperbarui immutable,
+   mengikuti pola app/dashboard/page.tsx (manajemen produk).
    ============================================================ */
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import AdminRoute from "@/components/AdminRoute";
 import Modal from "@/components/Modal";
 import CategoryFormFields from "@/components/CategoryFormFields";
@@ -20,13 +22,14 @@ import {
 import type { Category } from "@/lib/types";
 import { notifySuccess, notifyError } from "@/lib/toast";
 
-function CategoriesDashboardContent() {
+function CategoriesAdminContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [confirmId, setConfirmId] = useState<number | null>(null);
 
+  // Muat kategori saat mount.
   useEffect(() => {
     getCategories()
       .then(setCategories)
@@ -34,6 +37,7 @@ function CategoriesDashboardContent() {
       .finally(() => setLoading(false));
   }, []);
 
+  // CREATE: tambah ke state lokal (immutable) saat sukses.
   async function handleCreate(input: CategoryInput) {
     const created = await createCategory(input);
     setCategories((prev) => [created, ...prev]);
@@ -41,6 +45,7 @@ function CategoriesDashboardContent() {
     notifySuccess("Kategori dibuat.");
   }
 
+  // UPDATE: perbarui item di state dengan .map().
   async function handleUpdate(input: CategoryInput) {
     if (!editing) return;
     const updated = await updateCategory(editing.id, input);
@@ -49,6 +54,7 @@ function CategoriesDashboardContent() {
     notifySuccess("Kategori diperbarui.");
   }
 
+  // DELETE: hapus dari state dengan .filter().
   async function handleDelete(id: number) {
     try {
       await deleteCategory(id);
@@ -56,7 +62,7 @@ function CategoriesDashboardContent() {
       setConfirmId(null);
       notifySuccess("Kategori dihapus.");
     } catch (err) {
-      // 400 bila kategori punya produk terkait -> pesan backend.
+      // 400/409 bila kategori masih dipakai produk -> tampilkan pesan backend.
       notifyError(err instanceof Error ? err.message : "Gagal menghapus kategori.");
       setConfirmId(null);
     }
@@ -66,6 +72,9 @@ function CategoriesDashboardContent() {
 
   return (
     <section className="flex flex-col gap-4">
+      <Link href="/dashboard" className="self-start text-sm text-gengar-violet hover:underline">
+        &larr; Kembali ke Dashboard
+      </Link>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Manajemen Kategori</h1>
         <button
@@ -88,7 +97,7 @@ function CategoriesDashboardContent() {
         <tbody>
           {categories.map((c) => (
             <tr key={c.id} className="border-b border-gray-100">
-              <td className="py-2">{c.id}</td>
+              <td className="py-2">#{c.id}</td>
               <td className="py-2 capitalize">{c.name}</td>
               <td className="py-2">
                 {confirmId === c.id ? (
@@ -109,10 +118,12 @@ function CategoriesDashboardContent() {
         </tbody>
       </table>
 
+      {/* Modal Create */}
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Kategori Baru">
         <CategoryFormFields submitLabel="Buat" onSubmit={handleCreate} />
       </Modal>
 
+      {/* Modal Edit (pre-populated) */}
       <Modal open={editing !== null} onClose={() => setEditing(null)} title="Edit Kategori">
         {editing && (
           <CategoryFormFields
@@ -126,10 +137,10 @@ function CategoriesDashboardContent() {
   );
 }
 
-export default function CategoriesDashboardPage() {
+export default function CategoriesAdminPage() {
   return (
     <AdminRoute>
-      <CategoriesDashboardContent />
+      <CategoriesAdminContent />
     </AdminRoute>
   );
 }

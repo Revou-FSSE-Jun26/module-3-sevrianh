@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import NavBar from "./NavBar";
 import AuthNav from "./AuthNav";
+import CartNav from "./CartNav";
 
 export default function Header() {
   return (
@@ -20,8 +21,12 @@ export default function Header() {
         <Suspense fallback={<div className="h-6" />}>
           <NavBar />
         </Suspense>
-        {/* AuthNav bergantung status login (username vs Register). */}
-        <AuthNav />
+        {/* Ikon keranjang + badge jumlah item (link ke /cart). */}
+        <div className="flex items-center gap-2">
+          <CartNav />
+          {/* AuthNav bergantung status login (username vs Register). */}
+          <AuthNav />
+        </div>
       </div>
     </header>
   );

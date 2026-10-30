@@ -13,7 +13,7 @@ import { useCart } from "@/hooks/useCart";
 import { notifySuccess } from "@/lib/toast";
 
 function CartContent() {
-  const { items, removeFromCart, total } = useCart();
+  const { items, removeFromCart, updateQuantity, total } = useCart();
 
   // Empty state (Req 6.5).
   if (items.length === 0) {
@@ -53,25 +53,58 @@ function CartContent() {
           </tr>
         </thead>
         <tbody>
-          {items.map((it) => (
-            <tr key={it.product.id} className="border-b border-gray-100">
-              <td className="py-2">{it.product.name}</td>
-              <td className="py-2">Rp {it.product.price.toLocaleString("id-ID")}</td>
-              <td className="py-2">{it.quantity}</td>
-              <td className="py-2">
-                Rp {(it.product.price * it.quantity).toLocaleString("id-ID")}
-              </td>
-              <td className="py-2">
-                <button
-                  type="button"
-                  onClick={() => handleRemove(it.product.id, it.product.name)}
-                  className="text-gengar-lightred hover:underline"
-                >
-                  Hapus
-                </button>
-              </td>
-            </tr>
-          ))}
+          {items.map((it) => {
+            // Batas atas kuantitas = stok produk (tombol + nonaktif bila tercapai).
+            const atMaxStock = it.quantity >= it.product.stock;
+            return (
+              <tr key={it.product.id} className="border-b border-gray-100">
+                <td className="py-2">{it.product.name}</td>
+                <td className="py-2">Rp {it.product.price.toLocaleString("id-ID")}</td>
+                <td className="py-2">
+                  {/* Kontrol kuantitas: kurangi / tampilkan / tambah. */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(it.product.id, it.quantity - 1)}
+                      disabled={it.quantity <= 1}
+                      aria-label={`Kurangi jumlah ${it.product.name}`}
+                      className="h-8 w-8 rounded border border-gray-300 text-lg leading-none disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-100"
+                    >
+                      -
+                    </button>
+                    <span
+                      data-testid={`cart-qty-${it.product.id}`}
+                      className="min-w-8 text-center font-medium"
+                    >
+                      {it.quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(it.product.id, it.quantity + 1)}
+                      disabled={atMaxStock}
+                      aria-label={`Tambah jumlah ${it.product.name}`}
+                      title={atMaxStock ? "Mencapai batas stok" : undefined}
+                      className="h-8 w-8 rounded border border-gray-300 text-lg leading-none disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-100"
+                    >
+                      +
+                    </button>
+                  </div>
+                </td>
+                <td className="py-2">
+                  Rp {(it.product.price * it.quantity).toLocaleString("id-ID")}
+                </td>
+                <td className="py-2">
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(it.product.id, it.product.name)}
+                    className="text-gengar-lightred hover:underline"
+                  >
+                    Hapus
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 

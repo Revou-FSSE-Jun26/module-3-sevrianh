@@ -1,21 +1,24 @@
 "use client";
 
 /* ============================================================
-   app/dashboard/orders/page.tsx — Manajemen order (admin, Tugas 12)
-   AdminRoute. Tabel read-only semua order dari semua pengguna:
-   order ID, user ID, status, dan total (Req 11.2).
+   app/dashboard/orders/page.tsx — Daftar semua pesanan (admin)
+   AdminRoute. Berbeda dari /orders (yang hanya menampilkan pesanan
+   milik user login), halaman ini menampilkan SELURUH order dari
+   backend (GET /orders/) untuk keperluan admin.
    ============================================================ */
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import AdminRoute from "@/components/AdminRoute";
 import { getOrders } from "@/lib/api";
+// (Link sudah diimpor di atas; dipakai untuk tombol kembali & detail.)
 import type { Order } from "@/lib/types";
 
-function DashboardOrdersContent() {
+function OrdersAdminContent() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Muat semua order saat mount (Req 11.2).
+  // Muat semua order saat mount.
   useEffect(() => {
     getOrders()
       .then(setOrders)
@@ -34,18 +37,24 @@ function DashboardOrdersContent() {
       <thead>
         <tr className="border-b border-gray-200 text-gray-600">
           <th className="py-2">ID Pesanan</th>
-          <th className="py-2">ID Pengguna</th>
+          <th className="py-2">User</th>
           <th className="py-2">Status</th>
           <th className="py-2">Total</th>
+          <th className="py-2"></th>
         </tr>
       </thead>
       <tbody>
         {orders.map((order) => (
           <tr key={order.id} className="border-b border-gray-100">
             <td className="py-2">#{order.id}</td>
-            <td className="py-2">{order.user_id}</td>
+            <td className="py-2">#{order.user_id}</td>
             <td className="py-2">{order.status ?? "-"}</td>
             <td className="py-2">Rp {order.total_amount.toLocaleString("id-ID")}</td>
+            <td className="py-2">
+              <Link href={`/orders/${order.id}`} className="text-gengar-violet hover:underline">
+                Lihat detail
+              </Link>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -53,12 +62,15 @@ function DashboardOrdersContent() {
   );
 }
 
-export default function DashboardOrdersPage() {
+export default function OrdersAdminPage() {
   return (
     <AdminRoute>
       <section className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-gray-800">Semua Pesanan</h1>
-        <DashboardOrdersContent />
+        <Link href="/dashboard" className="self-start text-sm text-gengar-violet hover:underline">
+          &larr; Kembali ke Dashboard
+        </Link>
+        <h1 className="text-2xl font-bold text-gray-800">Manajemen Pesanan</h1>
+        <OrdersAdminContent />
       </section>
     </AdminRoute>
   );

@@ -13,17 +13,24 @@ import type { Category } from "@/lib/types";
 interface CategoryFilterProps {
   // Dipanggil saat user memilih kategori (atau "semua" => null).
   onSelect: (categoryId: number | null) => void;
+  // Daftar kategori opsional dari parent. Bila diberikan, komponen TIDAK
+  // fetch sendiri (menghindari double fetch). Bila tidak, fetch saat mount.
+  categories?: Category[];
 }
 
-export default function CategoryFilter({ onSelect }: CategoryFilterProps) {
-  const [categories, setCategories] = useState<Category[]>([]);
+export default function CategoryFilter({ onSelect, categories: categoriesProp }: CategoryFilterProps) {
+  const [fetched, setFetched] = useState<Category[]>([]);
 
-  // Fetch kategori sekali saat komponen mount (Req 13.4).
+  // Fetch kategori sekali saat mount HANYA bila parent tidak menyediakannya (Req 13.4).
   useEffect(() => {
+    if (categoriesProp) return;
     getCategories()
-      .then(setCategories)
-      .catch(() => setCategories([])); // bila gagal, biarkan kosong
-  }, []);
+      .then(setFetched)
+      .catch(() => setFetched([])); // bila gagal, biarkan kosong
+  }, [categoriesProp]);
+
+  // Sumber data: prop dari parent bila ada, selain itu hasil fetch sendiri.
+  const categories = categoriesProp ?? fetched;
 
   return (
     <select

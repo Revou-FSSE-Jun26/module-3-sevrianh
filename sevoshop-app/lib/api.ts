@@ -79,6 +79,12 @@ export async function getCategories(): Promise<Category[]> {
   return raw.map(adaptCategory);
 }
 
+// Ambil satu kategori berdasarkan id (GET /category/<id>).
+export async function getCategory(id: number | string): Promise<Category> {
+  const raw = await getJson<RawCategory>(`/category/${id}`);
+  return adaptCategory(raw);
+}
+
 export async function getOrders(): Promise<Order[]> {
   return getJson<Order[]>(`/orders/`);
 }
